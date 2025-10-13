@@ -18,27 +18,34 @@
 - [ ] 🃏 The Empress        | L'Impératrice      : changes rotation and add (can be cumulated) a +2
 - [ ] 🃏 The Emperor        | L'Empereur         : +4 cards and define the new color
 - [ ] 🪄 The Hierophant     | Le Pape            : resets your "+*" counter 
-- [ ] 🪄 The Lovers         | L'Amoureux         : lets you exchange your deck (randomly?) with someone else (who has 2 cards or more)
+- [ ] 🪄 The Lovers         | L'Amoureux         : merge shufflle and redistribute cards between them
 - [ ] 🪄 The Chariot        | Le Chariot         : lets you give 1 of your cards to the next player
 - [ ] 🃏 Justice            | La Justice         : sends the effect of last special card played to its sender
 - [ ] 🃏 The Hermit         | L'Ermite           : divide by two the number of "+N" card you have to draw
-- [ ] 🃏 Wheel of Fortune   | La Roue de Fortune : is transformed as a random stack card
+- [ ] 🃏 Wheel of Fortune   | La Roue de Fortune : is transformed as a random stack card | mulitplies by [0.5-2] | next draw [1..10] cards
 - [ ] 🪄 Strength           | La Force           : during the game your kings get an additional "+1"
 - [ ] 🪄 The Hanged Man     | Le Pendu           : removes 2 cards from your deck
-- [ ] 🃏 Death              | La Mort            : +2 to every player 
+- [ ] 🃏 Death              | La Mort            : +2 to every player (including you?)
 - [ ] 🪄 Temperance         | Tempérance         : at the end of the game, divide your score by 2
 - [ ] 🃏 The Devil          | Le Diable          : multiplies the number of cards of the next player by 2
 - [ ] 🪄 The Tower          | La Maison Dieu     : when you have the same card lets you place one more identical card at the same time
-- [ ] 🃏 The Stars          | L'Étoile           : shuffle players positions (?)
+- [ ] 🃏 The Stars          | L'Étoile           : shuffle players positions (?) (swap position with someone)
 - [ ] 🪄 The Moon           | La Lune            : will randomly remove either all spades or all clubs from the deck
 - [ ] 🪄 The Sun            | Le Soleil          : will randomly remove either all diamonds or all heart from the deck
 - [ ] 🃏 Judgement          | Le Jugement        : gives the number of "+*" counter of the next player
-- [ ] 🃏 The World          | Le Monde           : rolls your deck to a fresh new deck (with at max N cards)
+- [ ] 🃏 The World          | Le Monde           : rolls your deck to a fresh new deck (with at max N cards?)
 
 ### Global effects/events
-- [ ] Eclipse: when The Moon and The Sun are played in the same round, all "+N" are doubled (limited duration?)
+- [ ] Eclipse: when The Moon and The Sun are played in the same round, all "+N" base value are doubled (limited duration?)
 - [ ] The Empire: when The Emperor and The Empress are played in the same round, every player receive a King (+2) in their deck
-- [ ] Heaven: when The High Priestess and The Hierophant are played in the same round, everyone can place any card (regardless of the color)
+- [ ] Heaven: when The High Priestess and The Hierophant are played in the same round, everyone can place any card for one round (regardless of the color)
+
+Global effects in shop
+-> bid wars
+effects:
+  - Eclipse
+  - Magic (5% chance when draw to draw an ephemeral magic card (e.g. the magician))
+  - Kalm divide malus effects by 2
 
 ## Karma
 
@@ -51,8 +58,9 @@ Stats count in points and maybe effects
 ## Final score
 
 The lowest is your score, the better is your place\
-number of remaining cards * avg number of cards  + "+*" counter
+value of remaining cards * avg number of cards (need to be in the HUD)  + "+*" counter
 
+separated draws
 
 # R-mode
 
@@ -60,3 +68,8 @@ wheel of fortune used = 1 free common item in the shop?
 
 ## Items to buy
 - [ ] under the table slots
+- [ ] Planned love
+- [ ] cards
+- [ ] paper cards (rip)
+- [ ] stickers
+- [ ] pencil (+1)
