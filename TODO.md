@@ -39,13 +39,17 @@
 - [ ] Eclipse: when The Moon and The Sun are played in the same round, all "+N" base value are doubled (limited duration?)
 - [ ] The Empire: when The Emperor and The Empress are played in the same round, every player receive a King (+2) in their deck
 - [ ] Heaven: when The High Priestess and The Hierophant are played in the same round, everyone can place any card for one round (regardless of the color)
+- [ ] Parkinson: when a player has 2 strengths in the same game, then for 2 rounds, all players can place up to 2 cards
 
 Global effects in shop
 -> bid wars
 effects:
-  - Eclipse
-  - Magic (5% chance when draw to draw an ephemeral magic card (e.g. the magician))
-  - Kalm divide malus effects by 2
+  - **Eclipse**
+  - **Parkinson** for the whole game
+  - **Magic** (5% chance when draw to draw an ephemeral magic card (e.g. the magician))
+  - **Kalm** divide malus effects by 2
+  - **Effect** cards are marked according to their type
+  - **ef** (rare effect) every card is transparent
 
 ## Karma
 
