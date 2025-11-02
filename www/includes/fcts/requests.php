@@ -40,6 +40,18 @@ function add_player_to_lobby(string $gameID, string $playername) {
         ]);
 }
 
+function remove_player_from_lobby(string $gameID, string $nickname) {
+    global $db; 
+
+    $sqlQuery = 'DELETE FROM players WHERE gameID = :gameID AND name = :nickname';// AND _uuid = :_uuid';
+
+        $updateGame = $db->prepare($sqlQuery);
+        $updateGame->execute([
+            // '_uuid' => $_UUID,
+            'nickname' => $nickname,
+            'gameID' => $gameID,
+        ]);
+}
 
 function stopRunning(array $gameData): bool
 {

@@ -104,18 +104,9 @@ function quitLobby(int $lng, int $_UUID, string $gameID, string $nickname, int $
             'infos' => sprintf($qlbtxt[0][$lng], $nickname)
         ];
 
-    $nbejected = 0;
+    remove_player_from_lobby($gameID, $nickname);
 
-    if (strlen($lobby['game']['playerList']) > 0) {
-        $playersArray = explode('┇', $lobby['game']['playerList']);
-
-        foreach ($playersArray as $playerobj) {
-            if (str_starts_with($playerobj, $nickname . '┊')) {
-                $playersArray = array_diff($playersArray, array("$playerobj"));
-                $nbejected++;
-            }
-        }
-    } else {
+    if (get_connected_players_count($gameID) == 0) {
         $sqlQuery = 'UPDATE games SET gameState = -1 WHERE gameID = :gameID AND _uuid = :_uuid';
 
         $updateGame = $db->prepare($sqlQuery);
@@ -130,39 +121,10 @@ function quitLobby(int $lng, int $_UUID, string $gameID, string $nickname, int $
         ];
     }
 
-    $playersUpdated = implode('┇', $playersArray);
-
-    if ($nbejected > 0) {
-
-        $newcount = count($playersArray);
-        $newstate = ($newcount == 0) ? 3 : $lobby['game']['gameState'];
-
-        $sqlQuery = 'UPDATE games SET playerList = :players, nbConnected = :nbco, gameState = :gameState WHERE gameID = :gameID AND _uuid = :_uuid';
-
-        $updateGame = $db->prepare($sqlQuery);
-        $updateGame->execute([
-            '_uuid' => $_UUID,
-            'gameID' => $gameID,
-            'players' => $playersUpdated,
-            'nbco' => $newcount,
-            'gameState' => $newstate,
-        ]);
-
-        if ($newstate == 3)
-            return [
-                'found' => true,
-                'infos' => sprintf($qlbtxt[3][$lng], $gameID)
-            ];
-        else
-            return [
-                'found' => true,
-                'infos' => sprintf($qlbtxt[2][$lng][$reason], $nickname, $gameID)
-            ];
-    } else
-        return [
-            'found' => false,
-            'infos' => sprintf($qlbtxt[1][$lng], $nickname)
-        ];
+    return [
+        'found' => true,
+        'infos' => sprintf($qlbtxt[2][$lng][$reason], $nickname, $gameID)
+    ];
 }
 
 function createLobby(int $lng): array

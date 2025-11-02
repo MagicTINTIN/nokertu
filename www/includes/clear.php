@@ -6,7 +6,7 @@ if (isset($_SESSION['nickname']) && isset($_SESSION['gameID']) && isset($_SESSIO
     $quitstatus = quitLobby( $lng, $_SESSION['ID'], $_SESSION['gameID'], $_SESSION['nickname'] );
     if ($quitstatus['found'])
         $_SESSION['infoMsg'] = $quitstatus['infos'];
-        $_SESSION['lstWSmsg'] = $_SESSION['ID'] . '|'. $_SESSION['gameID'];
+        $_SESSION['lstWSmsg'] = $_SESSION['gameID'];
 }
 
 unset($_SESSION['gameOwner']);
