@@ -111,7 +111,7 @@ if (isset($_SESSION['infoMsg'])) {
 
         <?php if ((isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID'])) {?>
         function kick(dest) {
-            sendGame('<?php echo $_SESSION['ID'] ?>', "lobby_kick");
+            sendGame('<?php echo $_SESSION['gameID'] ?>', "lobby_kick");
         }
         <?php } ?>
         

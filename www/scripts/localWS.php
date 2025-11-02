@@ -19,11 +19,13 @@ const connect = function () {
         const port = 8443;
         const socketUrl = `${socketProtocol}//${socketAddress}:${port}`
 
-        socket = new WebSocket(socketUrl, 'echo-protocol');
+        socket = new WebSocket(socketUrl);//, 'echo-protocol');
 
         socket.onopen = (e) => {
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('socket opened');" ?>
             // Connection message
-            socket.send("");
+            // socket.send("");
+            // sendGame()
             // connection established
             resolve();
         }
