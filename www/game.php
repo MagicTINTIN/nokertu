@@ -75,7 +75,7 @@ $_SESSION['gameMenu'] = 'base';
     <script type="text/javascript">
         // When the document has loaded
         function ctgExec() {
-            sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'connect');
+            sendGame('<?php echo $_SESSION['gameID'] ?>', 'connect');
         }
         document.addEventListener('DOMContentLoaded', function () {
             // Connect to the websocket

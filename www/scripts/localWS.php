@@ -71,12 +71,7 @@ function sendGame(gameid, type = 'ping') {
     // console.log('sending val ping', gameid);
     if (!gameid || gameid == 0) return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('no gameid !')"; else echo "0"; ?>;
     if (isOpen(socket)) {
-        socket.send(JSON.stringify({
-            "from": "Nokertu",
-            "type": type,
-            "senttime": Date.now(),
-            "gameid": gameid
-        }));
+        socket.send(sprintf("nokertu/%s:%s", gameid, type));
         <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to `, gameid);' ?>
     }
 }

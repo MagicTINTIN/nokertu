@@ -97,7 +97,7 @@ if (isset($_SESSION['infoMsg'])) {
     <script type="text/javascript">
         // When the document has loaded
         function ctgExec() {
-            sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'connect');
+            sendGame('<?php echo $_SESSION['gameID'] ?>', 'lobby');
         }
         document.addEventListener('DOMContentLoaded', function () {
             // Connect to the websocket
@@ -105,13 +105,13 @@ if (isset($_SESSION['infoMsg'])) {
             inGame = 1;
         });
 
-        function askchoose(dest) {
-            sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'askCountry|<?php echo $_SESSION['nickname'] ?>|' + dest);
-        }
+        // function askchoose(dest) {
+        //     sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'askCountry|<?php echo $_SESSION['nickname'] ?>|' + dest);
+        // }
 
         <?php if ((isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID'])) {?>
-        function pingchoose(dest) {
-            sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'askPingCh|' + dest);
+        function kick(dest) {
+            sendGame('<?php echo $_SESSION['ID'] ?>', "lobby_kick");
         }
         <?php } ?>
         
