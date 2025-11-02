@@ -1,5 +1,7 @@
 <?php 
 
+include_once("db.php");
+
 function stopRunning ( array $gameData) : bool
 {
     $db = dbConnect();
