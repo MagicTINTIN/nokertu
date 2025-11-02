@@ -112,7 +112,7 @@ if (!( (isset($_POST['create']) && isset($_SESSION['gameID']))
 }
 ?>
 <!DOCTYPE html>
-<?php if ($DEBUGMODE % 3 == 0) echo "<!-- DEBUG MODE $DEBUGMODE -->\n" ?>
+<?php if (debug_mode(DEBUG_1)) echo "<!-- DEBUG MODE $DEBUGMODE -->\n" ?>
 <html lang="<?php echo $texts[0][$lng] ?>" id="background" class="worldmap">
 
 <head>

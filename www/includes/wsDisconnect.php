@@ -26,7 +26,7 @@ const connect = function () {
         }
 
         socket.onmessage = (data) => {
-            <?php if ($DEBUGMODE % 5 == 0) echo "console.log('websocket sent', data);" ?>
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('websocket sent', data);" ?>
             
             sendGame("<?php echo $_SESSION['lstWSmsg'] ?>",'playerQuit');
             socket.close();
@@ -34,12 +34,12 @@ const connect = function () {
 
         socket.onclose = (e) => {
             // Return an error if any occurs
-            <?php if ($DEBUGMODE % 5 == 0) echo "console.log('Disconnected from websocket');" ?>
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('Disconnected from websocket');" ?>
         }
 
         socket.onerror = (e) => {
             // Return an error if any occurs
-            <?php if ($DEBUGMODE % 5 == 0) echo "console.log(e);" ?>
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log(e);" ?>
             resolve();
             // Try to connect again
             connect();
@@ -53,7 +53,7 @@ const isOpen = function (ws) {
 }
 
 function sendGame(gameid, type = 'ping') {
-    if (!gameid || gameid == 0) return <?php if ($DEBUGMODE % 5 == 0) echo 'console.log("No gameid !");'; else echo "0;"; ?>
+    if (!gameid || gameid == 0) return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log("No gameid !");'; else echo "0;"; ?>
     if (isOpen(socket)) {
         socket.send(JSON.stringify({
             "from": "Nokertu",
@@ -61,7 +61,7 @@ function sendGame(gameid, type = 'ping') {
             "senttime": Date.now(),
             "gameid": gameid
         }));
-        <?php if ($DEBUGMODE % 5 == 0) echo 'console.log(`${type} sent to `, gameid);' ?>
+        <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to `, gameid);' ?>
     }
 }
 

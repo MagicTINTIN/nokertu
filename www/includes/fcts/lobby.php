@@ -6,11 +6,11 @@ function stopRunning ( array $gameData) : bool
 
     # Games started 48h ago are deleted
     if (time() - $gameData['timestamp'] > 3600 * 24 * 2) {
-            $sqlQuery = 'UPDATE game SET gameState = 3 WHERE ID = :ID';
+            $sqlQuery = 'UPDATE games SET gameState = -1 WHERE _uuid = :_uuid';
 
             $updateGame = $db->prepare($sqlQuery);
             $updateGame->execute([
-                'ID' => $gameData['ID'],
+                '_uuid' => $gameData['_uuid'],
             ]);
             return true;
     }
@@ -36,7 +36,7 @@ function stopRunningAll( array $gamesData ) : array
 function getLobby( string $gameID ) : array
 {
     $db = dbConnect();
-    $gamesStatement = $db->prepare('SELECT ID, gameID, timestamp, nbConnected, gameState, playerList, Player1, Player2, Player3, Player4, Player5, Player6, Player7 FROM game WHERE gameID = :gameID AND gamestate < 3');
+    $gamesStatement = $db->prepare('SELECT _uuid, gameID, timestamp, gameState FROM games WHERE gameID = :gameID AND gamestate > -1');
     $gamesStatement->execute([ 'gameID' => $gameID ]);
     $games = $gamesStatement->fetchAll();
 
@@ -124,7 +124,7 @@ function joinLobby( int $lng, string $gameID, string $nickname ) : array
     $playersArray[] = sprintf('%s┊0┊0', $nickname);
     $playersUpdated = implode('┇', $playersArray);
 
-    $sqlQuery = 'UPDATE game SET playerList = :players, nbConnected = :nbco  WHERE gameID = :gameID';
+    $sqlQuery = 'UPDATE games SET playerList = :players, nbConnected = :nbco  WHERE gameID = :gameID';
 
     $updateGame = $db->prepare($sqlQuery);
     $updateGame->execute([
@@ -136,7 +136,7 @@ function joinLobby( int $lng, string $gameID, string $nickname ) : array
     return $lobby;
 }
 
-function quitLobby( int $lng, int $ID, string $gameID, string $nickname, int $reason = 0 ) : array
+function quitLobby( int $lng, int $_UUID, string $gameID, string $nickname, int $reason = 0 ) : array
 {
     $qlbtxt = [
         [ "La partie dans laquelle se trouve %s n'a pas été trouvée","The game %s is in was not found" ],
@@ -167,11 +167,11 @@ function quitLobby( int $lng, int $ID, string $gameID, string $nickname, int $re
         }
     }
     else {
-        $sqlQuery = 'UPDATE game SET gameState = 3 WHERE gameID = :gameID AND ID = :ID';
+        $sqlQuery = 'UPDATE games SET gameState = -1 WHERE gameID = :gameID AND _uuid = :_uuid';
 
         $updateGame = $db->prepare($sqlQuery);
         $updateGame->execute([
-            'ID' => $ID,
+            '_uuid' => $_UUID,
             'gameID' => $gameID,
         ]);
 
@@ -188,11 +188,11 @@ function quitLobby( int $lng, int $ID, string $gameID, string $nickname, int $re
         $newcount = count($playersArray);
         $newstate = ($newcount == 0) ? 3 : $lobby['game']['gameState'];
 
-        $sqlQuery = 'UPDATE game SET playerList = :players, nbConnected = :nbco, gameState = :gameState WHERE gameID = :gameID AND ID = :ID';
+        $sqlQuery = 'UPDATE games SET playerList = :players, nbConnected = :nbco, gameState = :gameState WHERE gameID = :gameID AND _uuid = :_uuid';
 
         $updateGame = $db->prepare($sqlQuery);
         $updateGame->execute([
-            'ID' => $ID,
+            '_uuid' => $_UUID,
             'gameID' => $gameID,
             'players' => $playersUpdated,
             'nbco' => $newcount,
@@ -235,7 +235,7 @@ function createLobby(int $lng) : array
     
     while (!$gameIDfound && $try < $maxTry) {
         $try++;
-        $gamesStatement = $db->prepare('SELECT ID, timestamp FROM game WHERE gameID = :gameID AND gameState < 3');
+        $gamesStatement = $db->prepare('SELECT _uuid, timestamp FROM games WHERE gameID = :gameID AND gameState > -1');
         $gamesStatement->execute([ 'gameID' => $gameID ]);
         $games = $gamesStatement->fetchAll();
 
@@ -249,15 +249,16 @@ function createLobby(int $lng) : array
     }
     if ($gameIDfound) {
         
-        $sqlQuery = 'INSERT INTO game(gameID, timestamp) VALUES (:gameID, :timestamp)';
+        $sqlQuery = 'INSERT INTO games(gameID, name, timestamp) VALUES (:gameID, :name, :timestamp)';
 
         $insertGame = $db->prepare($sqlQuery);
         $insertGame->execute([
             'gameID' => $gameID,
+            'name' => $gameID . "'s game",
             'timestamp' => time()
         ]);
 
-        $gamesStatement = $db->prepare('SELECT ID FROM game WHERE gameID = :gameID AND gameState < 3');
+        $gamesStatement = $db->prepare('SELECT _uuid FROM games WHERE gameID = :gameID AND gameState > -1');
         $gamesStatement->execute([ 'gameID' => $gameID ]);
         $games = $gamesStatement->fetchAll();
 
@@ -267,7 +268,7 @@ function createLobby(int $lng) : array
             return [
                     'success' => true,
                     'reason' => $lbtxt[0][$lng] . $gameID,
-                    'ID' => $games[0]['ID'],
+                    'ID' => $games[0]['_uuid'],
                     'gameID' => $gameID
             ];
         else
@@ -287,8 +288,8 @@ function gameStatus(int $id, string $gameid) : array
 {
     $db = dbConnect();
 
-    $gameStatement = $db->prepare('SELECT gameState, nbConnected, playerList, Player1, Player2, Player3, Player4, Player5, Player6, Player7 FROM game WHERE ID = :ID AND gameID = :gameid');
-    $gameStatement->execute([ 'ID' => $id, 'gameid' => $gameid ]);
+    $gameStatement = $db->prepare('SELECT gameState FROM games WHERE _uuid = :_uuid AND gameID = :gameid');
+    $gameStatement->execute([ '_uuid' => $id, 'gameid' => $gameid ]);
     $games = $gameStatement->fetchAll();
 
     $nbgame = count($games);
@@ -300,20 +301,20 @@ function gameStatus(int $id, string $gameid) : array
     ];
 }
 
-function updateTeamLobby(int $ID, string $gameID, string $playerList) : array
+function updateTeamLobby(int $_UUID, string $gameID, string $playerList) : array
 {
     $db = dbConnect();
 
-    $sqlQuery = 'UPDATE game SET playerList = :playerList WHERE gameID = :gameID AND ID = :ID';
+    $sqlQuery = 'UPDATE games SET playerList = :playerList WHERE gameID = :gameID AND _uuid = :_uuid';
 
     $updateGame = $db->prepare($sqlQuery);
     $updateGame->execute([
-        'ID' => $ID,
+        '_uuid' => $_UUID,
         'gameID' => $gameID,
         'playerList' => $playerList
     ]);
 
-    return gameStatus($ID, $gameID);
+    return gameStatus($_UUID, $gameID);
 }
 
 
@@ -385,7 +386,7 @@ function setupGame(int $id, string $gameid, int $playercount, array $players) : 
         'connected' => $playercount
     ];
 
-    $sqlQuery = "UPDATE game SET ";
+    $sqlQuery = "UPDATE games SET ";
 
     for ($i=1; $i <= $playercount; $i++) { 
         $listExec['Player' . $i] = $players['Player' . $i];

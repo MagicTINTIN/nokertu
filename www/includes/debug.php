@@ -1,5 +1,16 @@
 <?php 
 $DEBUGMODE = 2*3*5;
+const DEBUG_ALL = 0; 
+const DEBUG_NOTHING = 1;
+const DEBUG_TMP = 2;
+const DEBUG_1 = 3;
+const DEBUG_WEBSOCKET = 5;
+// const DEBUG_WEBSOCKET = 0;
+
+function debug_mode($mode) : bool {
+    global $DEBUGMODE;
+    return $DEBUGMODE % $mode == 0;
+}
 
 /* Set debug mode settings
  * 0 = all messages

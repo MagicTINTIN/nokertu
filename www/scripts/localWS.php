@@ -14,25 +14,22 @@ const connect = function () {
     // Return a promise, which will wait for the socket to open
     return new Promise((resolve, reject) => {
 
-        const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:')
-        const port = 3000;
-        const socketUrl = `${socketProtocol}//${window.location.hostname}:${port}/ws/`
+        const socketProtocol = 'wss:'; //(window.location.protocol === 'https:' ? 'wss:' : 'ws:')
+        const socketAddress = "magictintin.fr";//`${window.location.hostname}`;
+        const port = 8443;
+        const socketUrl = `${socketProtocol}//${socketAddress}:${port}`
 
         socket = new WebSocket(socketUrl, 'echo-protocol');
 
         socket.onopen = (e) => {
             // Connection message
-            socket.send(JSON.stringify({
-                "from": "Nokertu",
-                "type": "load",
-                "loaded": true
-            }));
+            socket.send("");
             // connection established
             resolve();
         }
 
         socket.onmessage = (data) => {
-            <?php if ($DEBUGMODE % 5 == 0) echo "console.log('websocket sent', data);" ?>
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('websocket sent', data);" ?>
 
             let parsedData = JSON.parse(data.data);
             if (parsedData.append === true) {
@@ -57,7 +54,7 @@ const connect = function () {
 
         socket.onerror = (e) => {
             // Return an error if any occurs
-            <?php if ($DEBUGMODE % 5 == 0) echo "console.log(e);" ?>
+            <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log(e);" ?>
             resolve();
             // Try to connect again
             connect();
@@ -72,7 +69,7 @@ const isOpen = function (ws) {
 
 function sendGame(gameid, type = 'ping') {
     // console.log('sending val ping', gameid);
-    if (!gameid || gameid == 0) return <?php if ($DEBUGMODE % 5 == 0) echo "console.log('no gameid !')"; else echo "0"; ?>;
+    if (!gameid || gameid == 0) return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('no gameid !')"; else echo "0"; ?>;
     if (isOpen(socket)) {
         socket.send(JSON.stringify({
             "from": "Nokertu",
@@ -80,7 +77,7 @@ function sendGame(gameid, type = 'ping') {
             "senttime": Date.now(),
             "gameid": gameid
         }));
-        <?php if ($DEBUGMODE % 5 == 0) echo 'console.log(`${type} sent to `, gameid);' ?>
+        <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to `, gameid);' ?>
     }
 }
 
