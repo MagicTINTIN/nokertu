@@ -5,7 +5,7 @@ include_once(__DIR__ . "/party.php");
 function getLobby(string $gameID): array
 {
     global $db;
-    $gamesStatement = $db->prepare('SELECT _uuid, gameID, timestamp, gameState FROM games WHERE gameID = :gameID AND gamestate > -1');
+    $gamesStatement = $db->prepare('SELECT _uuid, gameID, timestamp, gameState, maxPlayers FROM games WHERE gameID = :gameID AND gamestate > -1');
     $gamesStatement->execute(['gameID' => $gameID]);
     $games = $gamesStatement->fetchAll();
 
@@ -73,37 +73,15 @@ function joinLobby(int $lng, string $gameID, string $nickname): array
     if (!$lobby['found'])
         return $lobby;
 
-    if (strlen($lobby['infos']['playerList']) > 0) {
-        $playersArray = explode('┇', $lobby['infos']['playerList']);
-
-        $nbfound = 0;
-        foreach ($playersArray as $playerobj) {
-            if (str_starts_with($playerobj, $nickname . '┊')) {
-                $nbfound++;
-            }
-        }
-        if ($nbfound > 0)
-            return [
-                'found' => false,
-                'type' => 'pseudo',
-                'reason' => $jlntxt[0][$lng],
-            ];
-    } else
-        $playersArray = [];
+    if (!is_username_available($gameID, $nickname))
+        return [
+            'found' => false,
+            'type' => 'pseudo',
+            'reason' => $jlntxt[0][$lng],
+        ];
     # nickname | team selection | ready
 
-    $playersArray[] = sprintf('%s┊0┊0', $nickname);
-    $playersUpdated = implode('┇', $playersArray);
-
-    $sqlQuery = 'UPDATE games SET playerList = :players, nbConnected = :nbco  WHERE gameID = :gameID';
-
-    $updateGame = $db->prepare($sqlQuery);
-    $updateGame->execute([
-        'gameID' => $gameID,
-        'players' => $playersUpdated,
-        'nbco' => count($playersArray),
-    ]);
-
+    add_player_to_lobby($gameID, $nickname);
     return $lobby;
 }
 

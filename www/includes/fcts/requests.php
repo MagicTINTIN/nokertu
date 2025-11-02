@@ -7,10 +7,10 @@ function get_connected_players_count($gameID)
     $stmt = $db->prepare("SELECT COUNT(*) AS playerCount FROM players WHERE gameID = :gameID");
     $stmt->execute(['gameID' => $gameID]);
 
-    $result =  $stmt->fetchColumn();
+    $playerCount =  $stmt->fetchColumn();
 
-    $row = $result->fetch_assoc();
-    $playerCount = $row['playerCount'] ?? 0;
+    // $row = $result->fetch_assoc();
+    // $playerCount = $row['playerCount'] ?? 0;
     return $playerCount;
 }
 
@@ -22,11 +22,22 @@ function is_username_available(string $gameID, string $username) : bool
     $stmt = $db->prepare("SELECT COUNT(*) AS playerCountWithSameName FROM players WHERE gameID = :gameID AND name = :name");
     $stmt->execute(['gameID' => $gameID, 'name' => $username]);
 
-    $result =  $stmt->fetchColumn();
+    $playerCountWithSameName =  $stmt->fetchColumn();
 
-    $row = $result->fetch_assoc();
-    $playerCountWithSameName = $row['playerCountWithSameName'] ?? 0;
+    // $row = $result->fetch_assoc();
+    // $playerCountWithSameName = $row['playerCountWithSameName'] ?? 0;
     return $playerCountWithSameName == 0;
+}
+
+function add_player_to_lobby(string $gameID, string $playername) {
+    global $db;
+    $sqlQuery = 'INSERT INTO players(gameID, name) VALUES (:gameID, :name)';
+
+        $insertGame = $db->prepare($sqlQuery);
+        $insertGame->execute([
+            'gameID' => $gameID,
+            'name' => $playername
+        ]);
 }
 
 

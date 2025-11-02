@@ -64,7 +64,7 @@ elseif (isset($_POST['gameid']) && isset($_POST['nickname'])) {
             $_SESSION['infoMsg'] = sprintf($texts[8][$lng], $nickname);
             $_SESSION['game'] = $joinData['infos'];
             $_SESSION['gameID'] = $joinData['infos']['gameID'];
-            $_SESSION['ID'] = $joinData['infos']['ID'];
+            $_SESSION['ID'] = $joinData['infos']['_uuid'];
             $_SESSION['nickname'] = $nickname;
             header("Location: ./lobby");
             exit();
