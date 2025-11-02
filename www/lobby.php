@@ -97,7 +97,7 @@ if (isset($_SESSION['infoMsg'])) {
     <script type="text/javascript">
         // When the document has loaded
         function ctgExec() {
-            sendGame('<?php echo $_SESSION['gameID'] ?>', 'lobby');
+            sendGame('join');
         }
         document.addEventListener('DOMContentLoaded', function () {
             // Connect to the websocket
@@ -111,7 +111,7 @@ if (isset($_SESSION['infoMsg'])) {
 
         <?php if ((isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID'])) {?>
         function kick(dest) {
-            sendGame('<?php echo $_SESSION['gameID'] ?>', "lobby_kick");
+            sendGame("kick");
         }
         <?php } ?>
         

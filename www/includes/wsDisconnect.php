@@ -8,27 +8,25 @@ const connect = function () {
     // Return a promise, which will wait for the socket to open
     return new Promise((resolve, reject) => {
 
-        const socketProtocol = (window.location.protocol === 'https:' ? 'wss:' : 'ws:')
-        const port = 3000;
-        const socketUrl = `${socketProtocol}//${window.location.hostname}:${port}/ws/`
+        const socketProtocol = 'wss:'; //(window.location.protocol === 'https:' ? 'wss:' : 'ws:')
+        const socketAddress = "magictintin.fr";//`${window.location.hostname}`;
+        const port = 8443;
+        const socketUrl = `${socketProtocol}//${socketAddress}:${port}`
 
         socket = new WebSocket(socketUrl);
 
         socket.onopen = (e) => {
             // Connection message
-            socket.send(JSON.stringify({
-                "from": "Nokertu",
-                "type": "load",
-                "loaded": true
-            }));
+            sendGame('quit');
             // connection established
             resolve();
+            socket.close();
         }
 
         socket.onmessage = (data) => {
             <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('websocket sent', data);" ?>
             
-            sendGame("<?php echo $_SESSION['lstWSmsg'] ?>",'playerQuit');
+            sendGame('quit');
             socket.close();
         }
 
@@ -52,15 +50,12 @@ const isOpen = function (ws) {
     return ws.readyState === ws.OPEN
 }
 
-function sendGame(gameid, type = 'ping') {
-    if (!gameid || gameid == 0) return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log("No gameid !");'; else echo "0;"; ?>
+function sendGame(type = 'ping') {
+    gameid = "<?php echo $_SESSION['lstWSmsg'] ?>";
+    // console.log('sending val ping', gameid);
+    if (!gameid || gameid == 0 || gameid == "") return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('no gameid !')"; else echo "0"; ?>;
     if (isOpen(socket)) {
-        socket.send(JSON.stringify({
-            "from": "Nokertu",
-            "type": type,
-            "senttime": Date.now(),
-            "gameid": gameid
-        }));
+        socket.send(`nokertu/${gameid}:${type}`);
         <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to `, gameid);' ?>
     }
 }
