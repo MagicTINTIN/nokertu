@@ -116,7 +116,7 @@ function quitLobby(int $lng, int $_UUID, string $gameID, string $nickname, int $
         ]);
 
         return [
-            'found' => false,
+            'found' => true,
             'infos' => sprintf($qlbtxt[3][$lng], $gameID)
         ];
     }
