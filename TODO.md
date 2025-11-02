@@ -48,7 +48,7 @@ effects:
   - **Parkinson** for the whole game
   - **Magic** (5% chance when draw to draw an ephemeral magic card (e.g. the magician))
   - **Kalm** divide malus effects by 2
-  - **Effect** cards are marked according to their type
+  - **Effect** cards are marked according to their type, then color
   - **ef** (rare effect) every card is transparent
 
 ## Karma
@@ -77,3 +77,4 @@ wheel of fortune used = 1 free common item in the shop?
 - [ ] paper cards (rip)
 - [ ] stickers
 - [ ] pencil (+1)
+<!-- - [ ] card folding (more frequent card but opponents can see the fold) -->
