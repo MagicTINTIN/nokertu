@@ -1,45 +1,6 @@
 <?php
 
-include_once(__DIR__ . "/db.php");
-
-function stopRunning(array $gameData): bool
-{
-    global $db;
-
-    # Games started 48h ago are deleted
-    if (time() - $gameData['timestamp'] > 3600 * 24 * 2) {
-        $sqlQuery = 'UPDATE games SET gameState = -1 WHERE _uuid = :_uuid';
-
-        $updateGame = $db->prepare($sqlQuery);
-        $updateGame->execute([
-            '_uuid' => $gameData['_uuid'],
-        ]);
-        return true;
-    } else
-        return false;
-}
-
-function stopRunningAll(array $gamesData): array
-{
-    $rtnval = ['val' => true, 'active' => -1];
-    $gamenb = -1;
-    foreach ($gamesData as $gameData) {
-        $gamenb++;
-        if (!stopRunning($gameData)) {
-            $rtnval = ['val' => false, 'active' => $gamenb];
-        }
-    }
-    return $rtnval;
-}
-
-function get_connected_players_count($gameID)
-{
-    global $db;
-
-    $stmt = $db->prepare("SELECT COUNT(*) AS playerCount FROM players WHERE gameID = :gameID");
-    $stmt->execute(['gameID' => $gameID]);
-    return $stmt->fetchColumn();
-}
+include_once(__DIR__ . "/party.php");
 
 function getLobby(string $gameID): array
 {
@@ -51,18 +12,10 @@ function getLobby(string $gameID): array
     $runninggame = stopRunningAll($games);
     if (!$runninggame['val']) {
 
-        $stmt = $db->prepare("SELECT COUNT(*) AS playerCount FROM players WHERE gameID = :gameID");
-        $stmt->execute(['gameID' => $gameID]);
-        $result = $stmt->fetchColumn();
-
-        // Fetch the count
-        $row = $result->fetch_assoc();
-        $playerCount = $row['playerCount'] ?? 0;
-
-
         return [
             'found' => true,
-            'game' => $games[$runninggame['active']]
+            'game' => $games[$runninggame['active']],
+            'nbConnected' => get_connected_players_count($gameID)
         ];
     } else
         return [
@@ -76,18 +29,18 @@ function getJoinLobby(int $lng,  string $gameID): array
     $jlbtxt = [
         ["Aucune partie avec le code %s trouvée", "No game found with the code %s"],
         ["La partie %s a déjà commencé ! Vous ne pouvez plus la rejoindre...", "The game %s has already started ! You can no longer join it..."],
-        ["La partie %s est déjà pleine.", "The game %s is already full."],
+        ["La partie %s est déjà pleine. (%d/%d)", "The game %s is already full. (%d/%d)"],
     ];
 
     $lobbydata = getLobby($gameID);
     if ($lobbydata['found']) {
         $actgame = $lobbydata['game'];
 
-        if ($actgame['nbConnected'] >= 7)
+        if ($lobbydata['nbConnected'] >= $actgame['maxPlayers'])
             return [
                 'found' => false,
                 'type' => 'full',
-                'reason' => sprintf($jlbtxt[2][$lng], $gameID)
+                'reason' => sprintf($jlbtxt[2][$lng], $gameID, $lobbydata['nbConnected'], $actgame['maxPlayers'])
             ];
         elseif ($actgame['gameState'] > 0)
             return [
@@ -113,7 +66,7 @@ function joinLobby(int $lng, string $gameID, string $nickname): array
     $jlntxt = [
         ["Ce pseudo est déjà pris !", "This nickname is already taken!"],
     ];
-    
+
     global $db;
     $lobby = getJoinLobby($lng, $gameID);
 
@@ -300,127 +253,15 @@ function createLobby(int $lng): array
         ];
 }
 
-function gameStatus(int $id, string $gameid): array
+function setupGame(string $gameid): bool
 {
+    error_log("Setting game : " . $gameid);
     global $db;
 
-    $gameStatement = $db->prepare('SELECT gameState FROM games WHERE _uuid = :_uuid AND gameID = :gameid');
-    $gameStatement->execute(['_uuid' => $id, 'gameid' => $gameid]);
-    $games = $gameStatement->fetchAll();
+    if (get_connected_players_count($gameid) < 1) return false;
 
-    $nbgame = count($games);
-    if ($nbgame != 1) return ['found' => false];
+    // TODO: 
+    // add cards to all players
 
-    return [
-        'found' => true,
-        'game' => $games[0]
-    ];
-}
-
-function updateTeamLobby(int $_UUID, string $gameID, string $playerList): array
-{
-    global $db;
-
-    $sqlQuery = 'UPDATE games SET playerList = :playerList WHERE gameID = :gameID AND _uuid = :_uuid';
-
-    $updateGame = $db->prepare($sqlQuery);
-    $updateGame->execute([
-        '_uuid' => $_UUID,
-        'gameID' => $gameID,
-        'playerList' => $playerList
-    ]);
-
-    return gameStatus($_UUID, $gameID);
-}
-
-
-function isEveryOneReady(int $id, string $gameid, int $lng): array
-{
-    $ieortxt = [
-        ["Partie lancée avec %d joueur", "Started a game with %d player"],
-        ["Tous les joueurs n'ont pas choisi leur pays", "All players didn't choose their country"],
-        ["Aucun joueur trouvé", "No player found"],
-        ["La partie n'a pas été trouvée", "Game not found"],
-    ];
-    $fctcountrylist = [
-        '1' => 'black',
-        '2' => 'gray',
-        '3' => 'red',
-        '4' => 'green',
-        '5' => 'yellow',
-        '6' => 'blue',
-        '7' => 'white',
-    ];
-
-    $everyoneIsReady = true;
-    $info = "";
-    $searchgame = gameStatus($id, $gameid);
-
-    if (!$searchgame['found'])
-        return ['started' => false, 'info' => $ieortxt[3][$lng], 'playernb' => 0, 'players' => []];
-
-    $game = $searchgame['game'];
-    $playernb = 0;
-    $playerList = [];
-
-    if (strlen($game['playerList']) > 0) {
-        $playersArray = explode('┇', $game['playerList']);
-
-        foreach ($playersArray as $playerobj) {
-
-            if (strlen($playerobj) > 0) {
-                $playernb++;
-                $playerData = explode('┊', $playerobj);
-
-                if (isset($fctcountrylist[$playerData[1]])) {
-                    $playerList['Player' . $playernb] = $playerData[1];
-                } else {
-                    $everyoneIsReady = false;
-                    $info = $ieortxt[1][$lng];
-                    //  . " ERR: " . $playerData[1] . " | " . $fctcountrylist['1']
-                }
-            }
-        }
-        if ($everyoneIsReady) $info = sprintf($ieortxt[0][$lng], $playernb) . (($playernb > 1) ? 's' : '');
-    } else {
-        $everyoneIsReady = false;
-        $info = $ieortxt[2][$lng];
-    }
-    return ['started' => $everyoneIsReady, 'info' => $info, 'playernb' => $playernb, 'players' => $playerList];
-}
-
-function setupGame(int $id, string $gameid, int $playercount, array $players): bool
-{
-    error_log("Setting game : " . $id . " | " . $gameid . " : " . $playercount . '/' . count($players));
-    if ($playercount < 1 || count($players) != $playercount) return false;
-    global $db;
-
-    $listExec = [
-        'ID' => $id,
-        'gameID' => $gameid,
-        'connected' => $playercount
-    ];
-
-    $sqlQuery = "UPDATE games SET ";
-
-    for ($i = 1; $i <= $playercount; $i++) {
-        $listExec['Player' . $i] = $players['Player' . $i];
-        $sqlQuery .= "Player$i = :Player$i, ";
-    }
-    // beurk : Player1 = :Player1, Player2 = :Player2, Player3 = :Player3, Player4 = :Player4, Player5 = :Player5, Player6 = :Player6, Player7 = :Player7
-    $sqlQuery .= 'nbConnected = :connected, gameState = 1 WHERE gameID = :gameID AND ID = :ID';
-    // error_log($sqlQuery);
-    // foreach ($listExec as $key => $value) {
-    //     error_log("listExec['". $key . "']='" . $value . "'");
-    // }
-
-    $updateGame = $db->prepare($sqlQuery);
-    $updateGame->execute($listExec);
-
-    $games = $updateGame->fetchAll();
-
-    $nbgame = count($games);
-    error_log($nbgame . " game(s) updated\n");
-    // if ($nbgame != 1) return false;
     return true;
 }

@@ -25,11 +25,11 @@ include_once('includes/fcts/db.php');
 include_once('includes/fcts/lobby.php');
 
 if (isset($_POST['starting']) && htmlspecialchars($_POST['starting']) == 'start' 
-    && isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID']) {
-    $starting = isEveryOneReady($_SESSION['ID'], $_SESSION['gameID'], $lng);
+    && is_game_owner()) {
+    // $starting = isEveryOneReady($_SESSION['ID'], $_SESSION['gameID'], $lng);
 
     if ($starting['started']) {
-        if (setupGame($_SESSION['ID'], $_SESSION['gameID'], $starting['playernb'], $starting['players'])) {
+        if (setupGame($_SESSION['gameID'])) {
             $_SESSION['infoMsg'] = $starting['info'];
             header("Location: ./game");
             exit();
