@@ -1,5 +1,16 @@
 <?php
 
+function get_connected_players($gameID)
+{
+    global $db;
+
+    $stmt = $db->prepare("SELECT name, avatar FROM players WHERE gameID = :gameID");
+    $stmt->execute(['gameID' => $gameID]);
+    $players = $stmt->fetchAll();
+
+    return $players;
+}
+
 function get_connected_players_count($gameID)
 {
     global $db;
@@ -14,7 +25,7 @@ function get_connected_players_count($gameID)
     return $playerCount;
 }
 
-function is_username_available(string $gameID, string $username) : bool
+function is_username_available(string $gameID, string $username): bool
 {
     if (strlen($username) > USERNAME_MAX_LENGTH) return false;
     global $db;
@@ -29,28 +40,30 @@ function is_username_available(string $gameID, string $username) : bool
     return $playerCountWithSameName == 0;
 }
 
-function add_player_to_lobby(string $gameID, string $playername) {
+function add_player_to_lobby(string $gameID, string $playername)
+{
     global $db;
     $sqlQuery = 'INSERT INTO players(gameID, name) VALUES (:gameID, :name)';
 
-        $insertGame = $db->prepare($sqlQuery);
-        $insertGame->execute([
-            'gameID' => $gameID,
-            'name' => $playername
-        ]);
+    $insertGame = $db->prepare($sqlQuery);
+    $insertGame->execute([
+        'gameID' => $gameID,
+        'name' => $playername
+    ]);
 }
 
-function remove_player_from_lobby(string $gameID, string $nickname) {
-    global $db; 
+function remove_player_from_lobby(string $gameID, string $nickname)
+{
+    global $db;
 
-    $sqlQuery = 'DELETE FROM players WHERE gameID = :gameID AND name = :nickname';// AND _uuid = :_uuid';
+    $sqlQuery = 'DELETE FROM players WHERE gameID = :gameID AND name = :nickname'; // AND _uuid = :_uuid';
 
-        $updateGame = $db->prepare($sqlQuery);
-        $updateGame->execute([
-            // '_uuid' => $_UUID,
-            'nickname' => $nickname,
-            'gameID' => $gameID,
-        ]);
+    $updateGame = $db->prepare($sqlQuery);
+    $updateGame->execute([
+        // '_uuid' => $_UUID,
+        'nickname' => $nickname,
+        'gameID' => $gameID,
+    ]);
 }
 
 function stopRunning(array $gameData): bool
@@ -83,12 +96,15 @@ function stopRunningAll(array $gamesData): array
     return $rtnval;
 }
 
-function gameStatus(int $id, string $gameid): array
+/**
+ * @deprecated
+ */
+function _gameStatus(string $gameid): array
 {
     global $db;
 
-    $gameStatement = $db->prepare('SELECT gameState FROM games WHERE _uuid = :_uuid AND gameID = :gameid');
-    $gameStatement->execute(['_uuid' => $id, 'gameid' => $gameid]);
+    $gameStatement = $db->prepare('SELECT gameState FROM games WHERE gameID = :gameid');
+    $gameStatement->execute(['gameid' => $gameid]);
     $games = $gameStatement->fetchAll();
 
     $nbgame = count($games);
@@ -98,4 +114,36 @@ function gameStatus(int $id, string $gameid): array
         'found' => true,
         'game' => $games[0]
     ];
+}
+
+function get_game(string $gameid): array
+{
+    global $db;
+
+    $gameStatement = $db->prepare('SELECT gameID, name, gameState, roundsCounter FROM games WHERE gameID = :gameid');
+    $gameStatement->execute(['gameid' => $gameid]);
+    $games = $gameStatement->fetchAll();
+
+    $nbgame = count($games);
+    if ($nbgame != 1) return ['found' => false];
+
+    return [
+        'found' => true,
+        'game' => $games[0]
+    ];
+}
+
+
+function gameStatus(string $gameid): int
+{
+    global $db;
+
+    $gameStatement = $db->prepare('SELECT gameState FROM games WHERE gameID = :gameid AND gameState >= 0');
+    $gameStatement->execute(['gameid' => $gameid]);
+    $games = $gameStatement->fetchAll();
+
+    $nbgame = count($games);
+    if ($nbgame != 1) return -1;
+
+    return $games[0]['gameState'];
 }

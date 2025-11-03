@@ -80,8 +80,8 @@ if (isset($_SESSION['infoMsg'])) {
 
             <?php include_once("includes/messages.php") ?>
 
-                <h1 id="choosecountryTitle"><?php echo $texts[1][$lng] ?></h1>
-                <div id="lobby"></div>
+                <div id="lobby">
+                </div>
         </section>
 
         <form method="post" id="exitlobby" action="./">

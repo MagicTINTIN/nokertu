@@ -3,7 +3,7 @@ include_once(__DIR__ . "/../../../../nokertu_db.php");
 
 $db = dbConnect();
 
-// // nokerty_db.php contains:
+// // nokertu_db.php contains:
 
 // function dbConnect() : PDO
 // {

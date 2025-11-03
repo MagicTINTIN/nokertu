@@ -1,5 +1,5 @@
 <script>
-var webpage = `http://${window.location.hostname}/Nokertu/<?php echo $_SESSION['gameID'] ?>`;
+var webpage = `http://${window.location.hostname}/nokertu/www/join/<?php echo $_SESSION['gameID'] ?>`;
 // var qrc = new QRCode(document.getElementById("qrcode"), webpage);
 // qrlink = document.getElementById("qrlink");
 qrlink.innerText = webpage;

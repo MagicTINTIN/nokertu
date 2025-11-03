@@ -5,12 +5,13 @@ $lclwsjstexts = [
 ];
 
 include_once(__DIR__ . "/../includes/constants.php");
- ?>
+?>
 
 <script>
     // Connect to the websocket
     inGame = 0;
     let socket;
+    $('#lobby').load('includes/updt/lobby.php');
 
     const connect = function() {
         // Return a promise, which will wait for the socket to open
@@ -36,6 +37,22 @@ include_once(__DIR__ . "/../includes/constants.php");
                 <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('websocket sent', data);" ?>
 
                 <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log(`received \${data.data}`);" ?>
+
+                // if (isInGame && data.data.startsWith('ping'))
+                //         $('#gameDiv').load('includes/updateParts/ping.php');
+
+                <?php
+                // LOBBY WS UPDATE MESSAGES
+                $state = gameStatus($_SESSION['gameID']);
+                if ($state == 0) {
+                ?>
+                    const lobbyUpdateKeywords = ["join", "quit", "lobby"];
+                    for (const keyword of lobbyUpdateKeywords) {
+                        if (inGame == 1 && data.data.startsWith(keyword))
+                            $('#lobby').load('includes/updt/lobby.php');
+                    }
+                <?php } ?>
+
 
                 // let parsedData = JSON.parse(data.data);
                 // if (parsedData.append === true) {

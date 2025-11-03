@@ -35,7 +35,17 @@ if ( !(isset($_SESSION['ID']) && isset($_SESSION['gameID']) && isset($_SESSION['
 include_once('../fcts/db.php');
 include_once('../fcts/lobby.php');
 
-$gameData = gameStatus($_SESSION['ID'], $_SESSION['gameID']);
+// $gameData = _gameStatus($_SESSION['ID'], $_SESSION['gameID']);
+// if (!$gameData['found'])
+// {
+//     $_SESSION['errorMsg'] = $updtLBtexts[4][$lng];
+//     header("Location: ../../");
+//     exit();
+// }
+
+// $_SESSION['game'] = $gameData['game'];
+
+$gameData = get_game($_SESSION['gameID']);
 if (!$gameData['found'])
 {
     $_SESSION['errorMsg'] = $updtLBtexts[4][$lng];
@@ -43,7 +53,6 @@ if (!$gameData['found'])
     exit();
 }
 
-$_SESSION['game'] = $gameData['game'];
 include_once('lobby/ready.php');
 
 ?>
