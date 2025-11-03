@@ -2,7 +2,10 @@
 $lclwsjstexts = [
     ["Merci de choisir un pays !", "Please choose a country!"],
     [" souhaiterait sélectionner votre pays", " would like to select your country"],
-]; ?>
+];
+
+include_once(__DIR__ . "/../includes/constants.php");
+ ?>
 
 <script>
     // Connect to the websocket
@@ -86,7 +89,7 @@ $lclwsjstexts = [
         if (!gameid || gameid == 0 || gameid == "") return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('no gameid !')";
                                                             else echo "0"; ?>;
         if (isOpen(socket)) {
-            socket.send(`nokertu/${gameid}:${type}`);
+            socket.send(`<?php echo NOKERTU_WS_ROOM ?>/${gameid}:${type}`);
             <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to ${gameid}`);' ?>
         }
     }

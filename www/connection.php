@@ -161,7 +161,7 @@ if (!( (isset($_POST['create']) && isset($_SESSION['gameID']))
 
     <?php
     if (isset($_SESSION['lstWSmsg']))
-        include_once("includes/wsDisconnect.php");
+        include_once("scripts/wsDisconnect.php");
     ?>
     
 </body>

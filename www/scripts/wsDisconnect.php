@@ -1,4 +1,6 @@
+<?php include_once(__DIR__ . "/../includes/constants.php"); ?>
 <script>
+
 
 // Connect to the websocket
 inGame = 0;
@@ -55,7 +57,7 @@ function sendGame(type = 'ping') {
     // console.log('sending val ping', gameid);
     if (!gameid || gameid == 0 || gameid == "") return <?php if (debug_mode(DEBUG_WEBSOCKET)) echo "console.log('no gameid !')"; else echo "0"; ?>;
     if (isOpen(socket)) {
-        socket.send(`nokertu/${gameid}:${type}`);
+        socket.send(`<?php echo NOKERTU_WS_ROOM ?>/${gameid}:${type}`);
         <?php if (debug_mode(DEBUG_WEBSOCKET)) echo 'console.log(`${type} sent to `, gameid);' ?>
     }
 }

@@ -94,7 +94,7 @@ if (isset($_SESSION['infoMsg'])) {
 
     <?php
     if (isset($_SESSION['lstWSmsg']))
-        include_once("includes/wsDisconnect.php");
+        include_once("scripts/wsDisconnect.php");
     ?>
 </body>
 
