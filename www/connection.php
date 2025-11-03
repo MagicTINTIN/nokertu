@@ -26,14 +26,15 @@ $texts = [
 
 include('includes/debug.php');
 
+include_once('includes/constants.php');
 include_once('includes/fcts/tools.php');
 include_once('includes/fcts/db.php');
 include_once('includes/fcts/lobby.php');
 
-$maxNickSize = 18;
+$maxNickSize = USERNAME_MAX_LENGTH;
 $minNickSize = 3;
 
-if (!(isset($_REQUEST['gameid']) || isset($_POST['create']) || (isset($_POST['gameid']) && isset($_POST['nickname'])))) {
+if (!(isset($_REQUEST['gameid']) || isset($_POST['create']) || isset($_SESSION["gameID"]) || (isset($_POST['gameid']) && isset($_POST['nickname'])))) {
     $_SESSION['errorMsg'] = $texts[5][$lng];
     header("Location: ./");
     exit();
@@ -45,9 +46,13 @@ if (isset($_POST['create'])) {
         $_SESSION['gameOwner'] = $newGameDataRaw['ID'];
         $_SESSION["infoMsg"] = $newGameDataRaw['reason'];
         $_SESSION["gameID"] = $newGameDataRaw['gameID'];
+        header("Refresh:0");
+        exit();
     }
     else {
         $errorMessageAG = $newGameDataRaw['reason'];
+        header("Location: ./");
+        exit();
     }
 }
 
@@ -82,8 +87,12 @@ elseif (isset($_POST['gameid']) && isset($_POST['nickname'])) {
 elseif (isset($_REQUEST['gameid'])) {
     unset($_SESSION['gameOwner']);
     $joinData = getJoinLobby($lng, htmlspecialchars($_REQUEST['gameid']));
-    if ($joinData['found'])
+    if ($joinData['found']) {
         $_SESSION['infoMsg'] = $texts[6][$lng];
+        $_SESSION['gameID'] = $joinData['infos']['gameID'];
+        header("Refresh:0");
+        exit();
+    }
     else {
         $_SESSION['errorMsg'] = $joinData['reason'];
         if ($joinData['type'] != "pseudo") {
@@ -103,9 +112,10 @@ if (isset($_SESSION['infoMsg'])) {
 }
 if (!( (isset($_POST['create']) && isset($_SESSION['gameID']))
     || isset($_REQUEST['gameid'])
+    || isset($_SESSION['gameID'])
     // || (isset($_SESSION['ID']) && isset($_SESSION['gameID']) && isset($_SESSION['game']) && isset($_SESSION['nickname'])) 
     )) {
-    $_SESSION['errorMsg'] = $joinData['reason'];
+    $_SESSION['errorMsg'] = "No param given to connection.php";
     include('includes/clear.php');
     header("Location: ./");
     exit();
@@ -149,7 +159,7 @@ if (!( (isset($_POST['create']) && isset($_SESSION['gameID']))
                         pattern="[a-zA-Z0-9_-]+"
                         minlength="<?php echo $minNickSize ?>" maxlength="<?php echo $maxNickSize ?>" size="<?php echo $maxNickSize ?>" title="<?php echo $texts[2][$lng] ?>">
                         <br>
-                    <input type="hidden" name="gameid" value="<?php echo (isset($_POST['create']) && isset($_SESSION['gameID'])) ? $_SESSION['gameID'] : htmlspecialchars($_REQUEST['gameid']) ?>" />
+                    <input type="hidden" name="gameid" value="<?php echo $_SESSION['gameID'] ;// (isset($_SESSION['ownerID']) && isset($_SESSION['gameID'])) ? $_SESSION['gameID'] : htmlspecialchars($_REQUEST['gameID']) ?>" />
                     <input type="submit" id="enterpseudo" name="language" value="<?php echo $texts[4][$lng] ?>" />
                 </form>
         </section>
