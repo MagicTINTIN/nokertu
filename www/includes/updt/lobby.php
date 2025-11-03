@@ -43,7 +43,6 @@ include_once('../fcts/lobby.php');
 //     exit();
 // }
 
-// $_SESSION['game'] = $gameData['game'];
 
 $gameData = get_game($_SESSION['gameID']);
 if (!$gameData['found'])
@@ -52,8 +51,7 @@ if (!$gameData['found'])
     header("Location: ../../");
     exit();
 }
-
-include_once('lobby/ready.php');
+$_SESSION['game'] = $gameData['game'];
 
 ?>
 <script>
@@ -69,9 +67,7 @@ function copy(text) {
 </script>
 <div id="lobbyDiv">
     <div id="lbMap">
-        <h3 class="worldmaptitle"><?php echo $updtLBtexts[0][$lng] ?></h3>
-        <img id="helpcat" src="images/cats/specialcat/helpcatcut.png">
-        <?php include_once('lobby/map.php') ?>
+        <h3 class="lobbyName"><?php echo $_SESSION['game']["name"] ?></h3>
     </div>
     <div id="lbSeparator"></div>
     <div id="lbLeftPanel">

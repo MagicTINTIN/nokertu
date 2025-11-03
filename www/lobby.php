@@ -1,21 +1,21 @@
 <?php session_start();
 $language = (!empty($_COOKIE['language'])) ? $_COOKIE['language'] : 'fr';
 $language = (isset($_POST['l'])) ? htmlspecialchars($_POST['l']) : $language;
-if (isset($_POST['l'])) setcookie('language', $language, [ 'expires' => time() + 365*24*3600, 'secure' => true, 'httponly' => true,]);
+if (isset($_POST['l'])) setcookie('language', $language, ['expires' => time() + 365 * 24 * 3600, 'secure' => true, 'httponly' => true,]);
 if ($language == 'en')
     $lng = 1;
 else
     $lng = 0;
 $texts = [
-    [ "fr", "en" ],
-    [ "Choisissez votre pays", "Choose your country" ],
-    [ "SORTIR", "EXIT" ],
-    [ "Une erreur est survenue lors du lancement", "An error has occured when starting"]
+    ["fr", "en"],
+    ["Choisissez votre pays", "Choose your country"],
+    ["SORTIR", "EXIT"],
+    ["Une erreur est survenue lors du lancement", "An error has occured when starting"]
 ];
 
 include('includes/debug.php');
 
-if ( !(isset($_SESSION['ID']) && isset($_SESSION['gameID']) && isset($_SESSION['game']) && isset($_SESSION['nickname'])) ) {
+if (!(isset($_SESSION['ID']) && isset($_SESSION['gameID']) && isset($_SESSION['game']) && isset($_SESSION['nickname']))) {
     include('includes/clear.php');
     header("Location: ./");
     exit();
@@ -24,21 +24,25 @@ if ( !(isset($_SESSION['ID']) && isset($_SESSION['gameID']) && isset($_SESSION['
 include_once('includes/fcts/db.php');
 include_once('includes/fcts/lobby.php');
 
-if (isset($_POST['starting']) && htmlspecialchars($_POST['starting']) == 'start' 
-    && is_game_owner()) {
+if (
+    isset($_POST['starting']) && htmlspecialchars($_POST['starting']) == 'start'
+    && is_game_owner()
+) {
     // $starting = isEveryOneReady($_SESSION['ID'], $_SESSION['gameID'], $lng);
 
-    if ($starting['started']) {
-        if (setupGame($_SESSION['gameID'])) {
-            $_SESSION['infoMsg'] = $starting['info'];
-            header("Location: ./game");
-            exit();
-        }
-        else $_SESSION['errorMsg'] = $texts[3][$lng];
+    // if ($starting['started']) {
+    //     if (setupGame($_SESSION['gameID'])) {
+    //         $_SESSION['infoMsg'] = $starting['info'];
+    //         header("Location: ./game");
+    //         exit();
+    //     }
+    //     else $_SESSION['errorMsg'] = $texts[3][$lng];
 
-    }
-    else $_SESSION['errorMsg'] = $starting['info'];
-} 
+    // }
+    // else $_SESSION['errorMsg'] = $starting['info'];
+    header("Location: ./game");
+    exit();
+}
 
 if (isset($_SESSION['errorMsg'])) {
     $errorMessage = $_SESSION['errorMsg'];
@@ -56,7 +60,7 @@ if (isset($_SESSION['infoMsg'])) {
 <head>
     <meta charset="utf-8">
     <?php include_once("includes/scale.php") ?>
-    
+
     <title>Lobby <?php echo $_SESSION['gameID'] ?> | Nokertu</title>
 
     <link href="styles/vars.css" rel="stylesheet">
@@ -64,7 +68,7 @@ if (isset($_SESSION['infoMsg'])) {
     <link href="styles/lobby.css" rel="stylesheet">
     <link href="styles/nonGame.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    
+
     <?php include_once("./scripts/localWS.php"); ?>
     <?php include_once("./scripts/variablefcts.php"); ?>
 
@@ -80,8 +84,8 @@ if (isset($_SESSION['infoMsg'])) {
 
             <?php include_once("includes/messages.php") ?>
 
-                <div id="lobby">
-                </div>
+            <div id="lobby">
+            </div>
         </section>
 
         <form method="post" id="exitlobby" action="./">
@@ -99,24 +103,24 @@ if (isset($_SESSION['infoMsg'])) {
         function ctgExec() {
             sendGame('join');
         }
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Connect to the websocket
             connect();
             inGame = 1;
         });
 
         // function askchoose(dest) {
-        //     sendGame('<?php echo $_SESSION['ID'] . '|'. $_SESSION['gameID'] ?>', 'askCountry|<?php echo $_SESSION['nickname'] ?>|' + dest);
+        //     sendGame('<?php echo $_SESSION['ID'] . '|' . $_SESSION['gameID'] ?>', 'askCountry|<?php echo $_SESSION['nickname'] ?>|' + dest);
         // }
 
-        <?php if ((isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID'])) {?>
-        function kick(dest) {
-            sendGame("kick");
-        }
+        <?php if ((isset($_SESSION['gameOwner']) && $_SESSION['gameOwner'] == $_SESSION['ID'])) { ?>
+
+            function kick(dest) {
+                sendGame("kick");
+            }
         <?php } ?>
-        
     </script>
-    
+
 </body>
 
 </html>
