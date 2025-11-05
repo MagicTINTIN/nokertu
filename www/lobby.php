@@ -8,7 +8,6 @@ else
     $lng = 0;
 $texts = [
     ["fr", "en"],
-    ["Choisissez votre pays", "Choose your country"],
     ["SORTIR", "EXIT"],
     ["Une erreur est survenue lors du lancement", "An error has occured when starting"]
 ];
@@ -36,7 +35,7 @@ if (
     //         header("Location: ./game");
     //         exit();
     //     }
-    //     else $_SESSION['errorMsg'] = $texts[3][$lng];
+    //     else $_SESSION['errorMsg'] = $texts[2][$lng];
 
     // }
     // else $_SESSION['errorMsg'] = $starting['info'];
@@ -89,7 +88,7 @@ if (isset($_SESSION['infoMsg'])) {
         </section>
 
         <form method="post" id="exitlobby" action="./">
-            <input type="submit" name="exiting" value="<?php echo $texts[2][$lng] ?>" />
+            <input type="submit" name="exiting" value="<?php echo $texts[1][$lng] ?>" />
         </form>
 
         <?php include_once("includes/commonjslng.php") ?>

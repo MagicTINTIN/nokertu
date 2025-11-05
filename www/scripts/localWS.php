@@ -1,7 +1,7 @@
 <?php
 $lclwsjstexts = [
-    ["Merci de choisir un pays !", "Please choose a country!"],
-    [" souhaiterait sélectionner votre pays", " would like to select your country"],
+    // ["Merci de choisir un pays !", "Please choose a country!"],
+    // [" souhaiterait sélectionner votre pays", " would like to select your country"],
 ];
 
 include_once(__DIR__ . "/../includes/constants.php");
@@ -63,12 +63,12 @@ include_once(__DIR__ . "/../includes/constants.php");
                 //     else if (inGame == 1 && parsedData.dataText.startsWith('askch')) {
                 //         let received = parsedData.dataText.split('|');
                 //         if (received[received.length - 1] == "<?php echo $_SESSION['nickname'] ?>")
-                //             showWarning(received[Math.max(0,received.length - 2)] + "<?php echo $lclwsjstexts[1][$lng] ?>");
+                //             showWarning(received[Math.max(0,received.length - 2)] + "<?php //echo $lclwsjstexts[1][$lng] ?>");
                 //     }
                 //     else if (inGame == 1 && parsedData.dataText.startsWith('pingch')) {
                 //         let received = parsedData.dataText.split('|');
                 //         if (received[received.length - 1] == "<?php echo $_SESSION['nickname'] ?>")
-                //             showWarning("<?php echo $lclwsjstexts[0][$lng] ?>");
+                //             showWarning("<?php //echo $lclwsjstexts[0][$lng] ?>");
                 //     }
                 //     // if (isInGame && parsedData.dataText.startsWith('Game ping'))
                 //     //     $('#gameDiv').load('includes/updateParts/ping.php');

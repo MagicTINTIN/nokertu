@@ -7,7 +7,7 @@ if ($language == 'en')
 else
     $lng = 0;
 $updtLBtexts = [
-    [ "Carte du monde", "World map" ],
+    [ "Lobby", "Lobby" ],
     [ "Liste des joueurs", "Player list"],
     [ "Jouer !", "Play!" ],
     [ "vous", "you" ],
@@ -19,9 +19,7 @@ $updtLBtexts = [
     [ "Expulser ", "Kick " ],
     [ "Souhaitez-vous vraiment expulser %s ?", "Do you really want to kick %s ?"],
     [ "Notifier ", "Ping " ],
-    [ "Demander son pays", "Ask for his country" ],
-    [ "<span class='bold'>%s</span><br>(Équipe %s)", "<span class='bold'>%s</span><br>(%s team)" ],
-    [ "Tous les joueurs n'ont pas sélectionné de pays", "Some players have not selected a country" ],
+    [ "Il faut minimum 2 joueurs pour commencer", "2 players are required to start" ],
 ];
 
 include('../debug.php');
@@ -52,6 +50,8 @@ if (!$gameData['found'])
     exit();
 }
 $_SESSION['game'] = $gameData['game'];
+
+$everyoneIsReady = get_connected_players_count($_SESSION['gameID']) > 1;
 
 ?>
 <script>
@@ -93,7 +93,7 @@ function copy(text) {
         <script>
             function disabledstart(over) {
                 if (over)
-                    document.getElementById("btnstartgame").innerHTML = "<?php echo $updtLBtexts[14][$lng]; ?>";
+                    document.getElementById("btnstartgame").innerHTML = "<?php echo $updtLBtexts[12][$lng]; ?>";
                 else
                     document.getElementById("btnstartgame").innerHTML = "<?php echo $updtLBtexts[2][$lng]; ?>";
             }
