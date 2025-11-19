@@ -139,6 +139,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         width: px(300),
         height: px(65),
         margin: UiRect::all(px(20)),
+        // border:
         justify_content: JustifyContent::Center,
         align_items: AlignItems::Center,
         ..default()
@@ -177,6 +178,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 align_items: AlignItems::Center,
                 ..default()
             },
+            BorderRadius::all(px(25)),
             BackgroundColor(CRIMSON.into()),
             children![
                 // Display the game name
@@ -195,12 +197,25 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ),
                 (
                     TextInput,
+                    BorderRadius::all(percent(25)),
+                    BackgroundColor(Color::Hsla(Hsla {
+                        hue: 0f32,
+                        saturation: 0f32,
+                        lightness: 0.1f32,
+                        alpha: 0.95f32
+                    })),
                     Node {
-                        padding: UiRect::all(Val::Px(5.0)),
+                        width: px(300),
+                        height: px(32),
+                        margin: UiRect::all(px(20)),
+                        // padding: UiRect::all(Val::Px(5.0)),
                         border: UiRect::all(Val::Px(2.0)),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
                         ..default()
                     },
-                    BorderColor::all(Color::BLACK)
+                    TextColor(TEXT_COLOR),
+                    BorderColor::all(Color::WHITE)
                 ),
                 // Display three buttons for each action available from the main menu:
                 // - new game
@@ -210,6 +225,8 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    BorderRadius::all(percent(25)),
+                    // BorderColor::all(Color::WHITE),
                     MenuButtonAction::Play,
                     children![
                         // (ImageNode::new(right_icon), button_icon_node.clone()),
@@ -224,6 +241,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node.clone(),
                     BackgroundColor(NORMAL_BUTTON),
+                    BorderRadius::all(percent(25)),
                     MenuButtonAction::Settings,
                     children![
                         // (ImageNode::new(wrench_icon), button_icon_node.clone()),
@@ -238,6 +256,7 @@ fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     Button,
                     button_node,
                     BackgroundColor(NORMAL_BUTTON),
+                    BorderRadius::all(percent(25)),
                     MenuButtonAction::Quit,
                     children![
                         // (ImageNode::new(exit_icon), button_icon_node),
