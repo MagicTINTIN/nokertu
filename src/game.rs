@@ -19,7 +19,12 @@ struct OnGameScreen;
 #[derive(Resource, Deref, DerefMut)]
 struct GameTimer(Timer);
 
-fn game_setup(mut commands: Commands, display_quality: Res<DisplayQuality>, volume: Res<Volume>) {
+fn game_setup(
+    mut commands: Commands,
+    display_quality: Res<DisplayQuality>,
+    volume: Res<Volume>,
+    asset_server: Res<AssetServer>,
+) {
     commands.spawn((
         DespawnOnExit(GameState::Game),
         Node {
@@ -54,6 +59,23 @@ fn game_setup(mut commands: Commands, display_quality: Res<DisplayQuality>, volu
                         margin: UiRect::all(px(50)),
                         ..default()
                     },
+                ),
+                (
+                    Sprite {
+                        image: asset_server.load("images/cards/game/club_01.png"),
+                        custom_size: Some(Vec2 {
+                            x: 876f32,
+                            y: 1164f32
+                        }),
+                        // color: Color::srgb(1.0, 0.0, 0.0),
+                        ..default()
+                    },
+                    // bevy::camera::visibility::RenderLayers::layer(1),
+                    // 3x3 grid of anchor examples by changing transform
+                    // Transform::from_xyz(i * len - len, j * len - len, 0.0)
+                    //     .with_scale(Vec3::splat(1.0 + (i - 1.0) * 0.2))
+                    //     .with_rotation(Quat::from_rotation_z((j - 1.0) * 0.2)),
+                    Pickable::default(),
                 ),
                 (
                     Text::default(),
